@@ -1,10 +1,33 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div id="app">
+    <network-status></network-status> 
+    <router-view/>
+  </div>
 </template>
+
+<script>
+import NetworkStatus from '@/components/NetworkStatus.vue';
+
+// Une fonction asynchrone pour simuler le chargement de données
+async function someAsyncFunction() {
+  return "Data loaded";
+}
+
+export default {
+  name: 'App',
+  components: {
+    NetworkStatus
+  },
+  async created() {
+    try {
+      const result = await someAsyncFunction();
+      console.log(result);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }
+}
+</script>
 
 <style>
 #app {

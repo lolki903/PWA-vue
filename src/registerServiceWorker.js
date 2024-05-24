@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-
-if (process.env.NODE_ENV === 'production') {
+import Swal from 'sweetalert2'
+console.log('test : ' + process.env.NODE_ENV)
+if (process.env.NODE_ENV !== 'production') {
+  console.log('test numero 2 : ' + process.env.NODE_ENV)
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready () {
       console.log(
@@ -11,8 +13,7 @@ if (process.env.NODE_ENV === 'production') {
       )
     },
     registered () {
-      console.log('Service worker has been registered.')
-    },
+      Swal.fire('Service worker has been registered.')},
     cached () {
       console.log('Content has been cached for offline use.')
     },
