@@ -1,11 +1,10 @@
 <template>
   <div class="camera-view">
-    <div class="video-container">
-      <video ref="videoElement" autoplay></video>
-      <button @click="takePhoto" class="photo-button">Prendre une photo</button>
-    </div>
+    <video ref="videoElement" autoplay></video>
+    <button @click="takePhoto">Prendre une photo</button>
     <canvas ref="canvasElement" style="display: none;"></canvas>
     <div>
+      <router-link to="/stockage">Voir toutes les photos</router-link>
       <h3>Photos :</h3>
       <ul>
         <li v-for="(photo, index) in lastThreePhotos" :key="photo.id" class="photo-item">
@@ -16,7 +15,6 @@
         </li>
       </ul>
     </div>
-    <router-link to="/stockage" class="button">Aller au Stockage</router-link>
   </div>
 </template>
 
@@ -55,7 +53,7 @@ export default {
         body: message,
       };
       if (Notification.permission === 'granted') {
-        if (registration && 'showNotification' in registration) {
+        if ('showNotification' in registration) {
           registration.showNotification(title, payload);
         } else {
           new Notification(title, payload);
@@ -99,7 +97,9 @@ export default {
       const photos = JSON.parse(localStorage.getItem('photos')) || [];
       this.photos = photos;
       // Synchroniser avec le store Vuex
-      this.$store.dispatch('setPhotos', photos);
+      photos.forEach(photo => {
+        this.$store.dispatch('addPhoto', photo);
+      });
     },
     removePhoto(id) {
       this.photos = this.photos.filter(photo => photo.id !== id);
@@ -143,35 +143,9 @@ export default {
   width: 100%;
 }
 
-.video-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-}
-
 .camera-view video {
-  width: 100%;
+  width: 70%;
   border: 1px solid black;
-}
-
-.photo-button {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.photo-button:hover {
-  background-color: #333;
-  transform: scale(1.05);
 }
 
 .camera-view img {
@@ -180,7 +154,7 @@ export default {
   margin: 10px;
 }
 
-.camera-view .button {
+.camera-view button {
   margin-top: 10px;
   padding: 10px 20px;
   background-color: #42b983;
@@ -188,13 +162,11 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
-.camera-view .button:hover {
+.camera-view button:hover {
   background-color: #333;
-  transform: scale(1.05);
 }
 
 .photo-item {
@@ -234,20 +206,4 @@ export default {
   border: 2px solid red;
 }
 
-.button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #42b983;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.button:hover {
-  background-color: #333;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-  transform: scale(1.05);
-}
 </style>
