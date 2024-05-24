@@ -8,6 +8,7 @@
       <router-link to="/about" class="button">About</router-link>
       <router-link to="/position" class="button">Position</router-link>
       <router-link to="/batterie" class="button">Batterie</router-link>
+      <router-link to="/vibreur" class="button">Vibreur</router-link>
     </div>
   </div>
 </template>
