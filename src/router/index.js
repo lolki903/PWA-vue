@@ -5,6 +5,7 @@ import HomeView from '@/views/HomeView.vue'
 import Stockage from '@/views/StockageView.vue'
 import Position from '@/views/PositionView.vue'
 import Appel from '@/views/AppelView.vue'
+import Batterie from '@/views/BatterieView.vue'
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: '/appel',
     name: 'appel',
     component: Appel
+  },
+  {
+    path: '/batterie',
+    name: 'batterie',
+    component: Batterie
   },
   {
     path: '/about',

@@ -6,8 +6,11 @@
     <div>
       <h3>Photos :</h3>
       <ul>
-        <li v-for="(photo, index) in lastThreePhotos" :key="index">
-          <img :src="photo.url" :alt="'Photo ' + index">
+        <li v-for="(photo, index) in lastThreePhotos" :key="photo.id" class="photo-item">
+          <div class="photo-container">
+            <img :src="photo.url" :alt="'Photo ' + index" :class="photo.isOnline ? 'online' : 'offline'">
+            <button class="delete-button" @click="removePhoto(photo.id)">×</button>
+          </div>
         </li>
       </ul>
     </div>
@@ -19,7 +22,8 @@ export default {
   name: 'CameraView',
   data() {
     return {
-      photos: []
+      photos: [],
+      isOnline: navigator.onLine
     };
   },
   computed: {
@@ -48,21 +52,17 @@ export default {
         body: message,
       };
       if (Notification.permission === 'granted') {
-        // new Notification('Notification de la caméra', {
-        //   body: message,
-        // });
-        if('showNotification' in registration) {
+        if ('showNotification' in registration) {
           registration.showNotification(title, payload);
-        }
-        else {
+        } else {
           new Notification(title, payload);
         }
       } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            new Notification('Notification de la caméra', 
-            {
-              body: message,});
+            new Notification('Notification de la caméra', {
+              body: message,
+            });
           } else {
             console.warn('Notification permission denied');
           }
@@ -80,25 +80,61 @@ export default {
       canvas.height = video.videoHeight;
       canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
       const photoData = canvas.toDataURL('image/png');
-      this.photos.push({ url: photoData });
-      debugger;
+      const photoId = Date.now().toString();
+      const photo = { id: photoId, url: photoData, isOnline: this.isOnline };
+      this.photos.push(photo);
       this.notify('Photo capturée avec succès!');
-      console.log('Photo data:', photoData);
-      this.storePhoto(photoData);
+      this.storePhoto(photo);
     },
-    storePhoto(photoData) {
-      // Exemple de stockage des photos dans le localStorage
-      this.$store.dispatch('addPhoto', { url: photoData, timestamp: new Date().toISOString() });
-      localStorage.setItem('photo_' + Date.now(), photoData);
+    storePhoto(photo) {
+      const photos = JSON.parse(localStorage.getItem('photos')) || [];
+      photos.push(photo);
+      localStorage.setItem('photos', JSON.stringify(photos));
+      this.$store.dispatch('addPhoto', photo);
+    },
+    loadPhotos() {
+      const photos = JSON.parse(localStorage.getItem('photos')) || [];
+      this.photos = photos;
+      // Synchroniser avec le store Vuex
+      photos.forEach(photo => {
+        this.$store.dispatch('addPhoto', photo);
+      });
+    },
+    removePhoto(id) {
+      this.photos = this.photos.filter(photo => photo.id !== id);
+      localStorage.setItem('photos', JSON.stringify(this.photos));
+      this.$store.dispatch('removePhoto', id);
+    },
+    async updateOnlineStatus() {
+      this.isOnline = navigator.onLine;
+      if (this.isOnline) {
+        // Mettre à jour les photos pour marquer celles qui étaient hors ligne comme maintenant en ligne
+        this.photos.forEach(photo => {
+          if (!photo.isOnline) {
+            photo.isOnline = true;
+          }
+        });
+        localStorage.setItem('photos', JSON.stringify(this.photos));
+        this.$store.dispatch('updatePhotos', this.photos);
+        await this.notify('Synchronisation des images effectuée !');
+        alert('Synchronisation des images effectuée !');
+      }
     }
   },
   mounted() {
     this.getCameraStream();
+    this.loadPhotos(); // Charger les photos depuis le localStorage lors du montage
+    window.addEventListener('online', this.updateOnlineStatus);
+    window.addEventListener('offline', this.updateOnlineStatus);
+  },
+  beforeUnmount() {
+    window.removeEventListener('online', this.updateOnlineStatus);
+    window.removeEventListener('offline', this.updateOnlineStatus);
   }
 };
 </script>
 
-<style>
+<style scoped>
 .camera-view {
   display: flex;
   flex-direction: column;
@@ -130,5 +166,42 @@ export default {
 
 .camera-view button:hover {
   background-color: #333;
+}
+
+.photo-item {
+  position: relative;
+}
+
+.photo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: darkred;
+}
+
+.online {
+  border: 2px solid green;
+}
+
+.offline {
+  border: 2px solid red;
 }
 </style>

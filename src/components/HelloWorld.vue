@@ -7,6 +7,7 @@
       <router-link to="/appel" class="button">Appel</router-link>
       <router-link to="/about" class="button">About</router-link>
       <router-link to="/position" class="button">Position</router-link>
+      <router-link to="/batterie" class="button">Batterie</router-link>
     </div>
   </div>
 </template>
@@ -23,6 +24,11 @@ export default {
   margin-top: 50px;
 }
 
+.navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .navigation .button {
   margin: 10px;
   padding: 10px 20px;
