@@ -143,7 +143,7 @@ export default {
 }
 
 .camera-view video {
-  width: 50%;
+  width: 70%;
   border: 1px solid black;
 }
 

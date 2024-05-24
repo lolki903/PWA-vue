@@ -2,6 +2,10 @@
     <div class="battery-status">
       <h3>Batterie</h3>
       <p>{{ batteryLevel }}%</p>
+      <div class="battery-bar">
+        <div class="battery-fill" :style="{ width: batteryLevel + '%' }"></div>
+      </div>
+      <div v-if="isCharging" class="charging-indicator"></div>
     </div>
   </template>
   
@@ -9,12 +13,14 @@
   export default {
     data() {
       return {
-        batteryLevel: 0
+        batteryLevel: 0,
+        isCharging: false // État de charge de la batterie
       };
     },
     methods: {
       updateBatteryStatus(battery) {
         this.batteryLevel = Math.round(battery.level * 100);
+        this.isCharging = battery.charging;
       }
     },
     mounted() {
@@ -23,6 +29,10 @@
           this.updateBatteryStatus(battery);
   
           battery.addEventListener('levelchange', () => {
+            this.updateBatteryStatus(battery);
+          });
+          
+          battery.addEventListener('chargingchange', () => {
             this.updateBatteryStatus(battery);
           });
         });
@@ -54,6 +64,43 @@
   .battery-status p {
     font-size: 24px;
     margin: 0;
+  }
+  
+  .battery-bar {
+    width: 100%;
+    height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .battery-fill {
+    height: 100%;
+    background-color: #42b983;
+    transition: width 0.3s ease;
+  }
+  
+  .charging-indicator {
+    width: 20px;
+    height: 20px;
+    background-color: #42b983;
+    border-radius: 50%;
+    margin-top: 10px;
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
   </style>
   
