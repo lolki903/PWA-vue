@@ -4,6 +4,7 @@
     <button @click="takePhoto">Prendre une photo</button>
     <canvas ref="canvasElement" style="display: none;"></canvas>
     <div>
+      <router-link to="/stockage">Voir toutes les photos</router-link>
       <h3>Photos :</h3>
       <ul>
         <li v-for="(photo, index) in lastThreePhotos" :key="photo.id" class="photo-item">
@@ -204,4 +205,5 @@ export default {
 .offline {
   border: 2px solid red;
 }
+
 </style>

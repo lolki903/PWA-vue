@@ -7,7 +7,9 @@ export default createStore({
   },
   mutations: {
     addPhoto(state, photo) {
-      state.photos.push(photo);
+      if (!state.photos.find(p => p.id === photo.id)) {
+        state.photos.push(photo);
+      }
     },
     removePhoto(state, photoId) {
       state.photos = state.photos.filter(photo => photo.id !== photoId);

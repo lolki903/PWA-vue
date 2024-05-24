@@ -3,10 +3,10 @@
     <p v-if="latitude !== null && longitude !== null">Latitude: {{ latitude }}</p>
     <p v-if="latitude !== null && longitude !== null">Longitude: {{ longitude }}</p>
     <div v-if="latitude !== null && longitude !== null" id="map"></div>
-    <p v-else>La localisation n'est pas disponible. Veuillez autoriser l'accès à votre position.</p>
     <div v-if="loading" class="loading-bar">
       <div class="loading-bar-inner"></div>
     </div>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -41,6 +41,7 @@ export default {
       } else {
         this.errorMessage = "La géolocalisation n'est pas prise en charge par votre navigateur.";
         console.error(this.errorMessage);
+        this.loading = false; // Arrêter le chargement en cas d'erreur
       }
     },
     handleLocationError(error) {
@@ -113,5 +114,11 @@ export default {
   100% {
     width: 100%;
   }
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
 }
 </style>
