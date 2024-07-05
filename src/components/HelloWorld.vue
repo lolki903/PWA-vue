@@ -4,6 +4,7 @@
     <h1>BIENVENUE !</h1>
     <img src="../assets/qrcode.png" alt="QR Code">
     <div class="navigation">
+      <router-link to="/feedback" class="button">Feedback</router-link>
       <router-link to="/camera" class="button">Camera</router-link>
       <router-link to="/stockage" class="button">Stockage</router-link>
       <router-link to="/appel" class="button">Appel</router-link>

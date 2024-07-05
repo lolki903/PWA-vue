@@ -7,12 +7,18 @@ import Position from '@/views/PositionView.vue'
 import Appel from '@/views/AppelView.vue'
 import Batterie from '@/views/BatterieView.vue'
 import Vibreur from '@/views/VibreurView.vue'
+import ReviewForm from '@/views/FeedbackView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/feedback',
+    name: 'feedback',
+    component: ReviewForm
   },
   {
     path: '/camera',
